@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#07111e">
+<title>Sleeper War Room Pro</title>
+<style>
+:root{
+  --bg:#07111e;--panel:#0d1d31;--panel2:#112744;--line:#294565;
+  --txt:#f3f8ff;--muted:#91a7c1;--cyan:#36d7ff;--green:#31d49b;
+  --amber:#f5a524;--red:#fb7185;--purple:#a78bfa;
+}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#17314f 0,#07111e 44%);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.app{max-width:1180px;margin:auto;padding:calc(10px + env(safe-area-inset-top)) 10px calc(28px + env(safe-area-inset-bottom))}
+.header{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.brand{display:flex;gap:10px;align-items:center}.logo{width:48px;height:48px;border-radius:15px;background:linear-gradient(135deg,var(--cyan),var(--purple));display:grid;place-items:center;color:#03111b;font-weight:1000}
+h1{font-size:20px;margin:0}.sub{font-size:12px;color:var(--muted)}
+.pills{display:flex;gap:7px;flex-wrap:wrap}.pill{border:1px solid var(--line);background:#09182a;padding:7px 10px;border-radius:999px;font-size:12px}
+button{border:0;border-radius:10px;background:var(--cyan);color:#03111b;font-weight:900;padding:9px 12px}
+.tabs{display:flex;gap:7px;overflow:auto;margin:12px 0;padding-bottom:2px}.tab{border:1px solid var(--line);background:#09182a;color:var(--muted);white-space:nowrap}.tab.active{background:var(--cyan);color:#03111b}
+.view{display:none}.view.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:10px}
+.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:13px;box-shadow:0 12px 28px rgba(0,0,0,.24)}
+.s3{grid-column:span 3}.s4{grid-column:span 4}.s5{grid-column:span 5}.s6{grid-column:span 6}.s7{grid-column:span 7}.s8{grid-column:span 8}.s12{grid-column:span 12}
+.card h3{margin:0 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:#cbd9ea}
+.kpi{font-size:31px;font-weight:1000;line-height:1}.good{color:var(--green)}.warn{color:var(--amber)}.bad{color:var(--red)}.muted{color:var(--muted)}
+.scorebar{height:10px;border-radius:999px;background:#081522;overflow:hidden;margin-top:8px}.scorebar>span{display:block;height:100%;background:linear-gradient(90deg,var(--red),var(--amber),var(--green));border-radius:999px}
+.metricrow{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #1c3550}.metricrow:last-child{border-bottom:0}
+.teams{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.team{cursor:pointer}.team:active{transform:scale(.99)}
+.rankline{display:flex;justify-content:space-between;gap:8px;align-items:center}.rankbadge{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:#071522;border:1px solid var(--line);font-weight:900}
+.counts{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px}.cnt{background:#071522;padding:7px;border-radius:8px;text-align:center}.cnt b{display:block}.cnt small{font-size:10px;color:var(--muted)}
+.pick{display:grid;grid-template-columns:46px 1fr 42px;gap:8px;padding:9px 0;border-bottom:1px solid #1d3550;align-items:center}.pick small{color:var(--muted)}
+.pos{display:inline-block;padding:3px 6px;border-radius:6px;color:#04111d;font-size:10px;font-weight:1000}.QB{background:var(--red)}.RB{background:#75e7b6}.WR{background:#65caf3}.TE{background:#ffb55a}.OTHER{background:#d1d5db}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{padding:7px 9px;border-radius:9px;background:#071522;border:1px solid #213b59;font-size:12px}
+.alert{padding:11px;border-left:4px solid var(--amber);background:#171a24;border-radius:9px}
+.trend{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px;border-radius:10px;background:#071522;margin-top:7px}
+.err{display:none;margin-top:12px;padding:11px;border-radius:10px;background:#431624;border:1px solid #7a2e47;color:#ffd7e0}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);padding:14px;z-index:9}.modal.open{display:grid;place-items:center}.modalbox{width:min(760px,100%);max-height:88vh;overflow:auto;background:#0a192b;border:1px solid #315477;border-radius:18px;padding:16px}
+.note{font-size:11px;color:var(--muted);line-height:1.35}
+@media(min-width:900px){.teams{grid-template-columns:repeat(5,1fr)}}@media(max-width:760px){.s3,.s4,.s5,.s6,.s7,.s8{grid-column:span 12}.teams{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="brand">
+      <div class="logo">WR</div>
+      <div><h1>Sleeper War Room Pro</h1><div class="sub">Live room analysis · mobile-first · auto-refresh</div></div>
+    </div>
+    <div class="pills">
+      <span class="pill">Status <b id="status">Connecting</b></span>
+      <span class="pill">Picks <b id="pickCount">—</b></span>
+      <span class="pill">Next <b id="nextPickMini">—</b></span>
+      <button id="refresh">Refresh</button>
+    </div>
+  </div>
+
+  <div id="err" class="err"></div>
+
+  <div class="tabs">
+    <button class="tab active" data-view="warroom">War Room</button>
+    <button class="tab" data-view="rankings">League Rank</button>
+    <button class="tab" data-view="teams">Teams</button>
+    <button class="tab" data-view="picks">Latest Picks</button>
+    <button class="tab" data-view="you">Your Team</button>
+  </div>
+
+  <section id="warroom" class="view active">
+    <div class="grid">
+      <div class="card s4">
+        <h3>Your live health</h3>
+        <div class="kpi" id="healthScore">—</div>
+        <div class="scorebar"><span id="healthBar" style="width:0%"></span></div>
+        <div class="note" id="healthLabel">Waiting for roster data.</div>
+      </div>
+      <div class="card s4">
+        <h3>Estimated room rank</h3>
+        <div class="kpi" id="yourRank">—</div>
+        <div class="note">Heuristic roster-construction rank, not a fabricated win probability.</div>
+      </div>
+      <div class="card s4">
+        <h3>Next selection</h3>
+        <div class="kpi" id="nextPick">—</div>
+        <div class="note" id="pickDistance">Calculated from completed Sleeper picks.</div>
+      </div>
+
+      <div class="card s7">
+        <h3>Your construction</h3>
+        <div id="construction"></div>
+      </div>
+      <div class="card s5">
+        <h3>Room trend — last 10 picks</h3>
+        <div id="roomTrend"></div>
+      </div>
+
+      <div class="card s12">
+        <h3>Decision guidance</h3>
+        <div class="alert" id="advisor">Waiting for live roster data…</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="rankings" class="view">
+    <div class="card"><h3>Live heuristic team rankings</h3><div id="rankList"></div><div class="note">Scores reward balanced construction, starter coverage and positional flexibility. They do not claim championship odds.</div></div>
+  </section>
+
+  <section id="teams" class="view"><div class="card"><h3>All teams — tap for roster</h3><div id="teamGrid" class="teams"></div></div></section>
+
+  <section id="picks" class="view"><div class="card"><h3>Most recent picks</h3><div id="pickList"></div></div></section>
+
+  <section id="you" class="view">
+    <div class="grid">
+      <div class="card s6"><h3>Your roster</h3><div id="yourRoster" class="chips"></div></div>
+      <div class="card s6"><h3>Your positional report</h3><div id="yourReport"></div></div>
+    </div>
+  </section>
+</div>
+
+<div id="modal" class="modal"><div class="modalbox"><button id="close" style="float:right">Close</button><div id="modalContent"></div></div></div>
+
+<script>
+const YOUR_SLOT = 1;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+document.querySelectorAll(".tab").forEach(btn => btn.addEventListener("click", () => {
+  document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+  document.querySelectorAll(".view").forEach(x => x.classList.remove("active"));
+  btn.classList.add("active");
+  $(btn.dataset.view).classList.add("active");
+}));
+
+function teamScore(team){
+  const c = team.counts;
+  let score = 52;
+  score += Math.min(c.QB,2)*6;
+  score += Math.min(c.RB,5)*4.2;
+  score += Math.min(c.WR,7)*4.4;
+  score += Math.min(c.TE,2)*6;
+  if(c.QB===0) score -= 8;
+  if(c.TE===0) score -= 7;
+  if(c.RB<2) score -= 7;
+  if(c.WR<3) score -= 7;
+  if(c.QB>3) score -= 3;
+  if(c.TE>3) score -= 3;
+  return Math.max(0,Math.min(100,Math.round(score)));
+}
+
+function healthText(score){
+  if(score>=90) return ["Elite construction","good"];
+  if(score>=82) return ["Strong and on plan","good"];
+  if(score>=74) return ["Competitive, one need emerging","warn"];
+  if(score>=65) return ["Needs attention","warn"];
+  return ["Structural risk","bad"];
+}
+
+function renderConstruction(team){
+  const targets={QB:[2,3],RB:[6,8],WR:[8,10],TE:[2,3]};
+  return ["QB","RB","WR","TE"].map(p=>{
+    const count=team.counts[p], min=targets[p][0], max=targets[p][1];
+    const pct=Math.min(100,Math.round((count/min)*100));
+    const status=count===0?"Unfilled":count<min?"Building":count<=max?"On track":"Heavy";
+    return `<div class="metricrow"><span><span class="pos ${p}">${p}</span> ${status}</span><b>${count}</b></div><div class="scorebar" style="margin-top:-2px;margin-bottom:5px"><span style="width:${pct}%"></span></div>`;
+  }).join("");
+}
+
+function renderTrend(picks){
+  const last=picks.slice(-10);
+  const totals={QB:0,RB:0,WR:0,TE:0,OTHER:0};
+  last.forEach(p=>totals[totals[p.position]!==undefined?p.position:"OTHER"]++);
+  const ordered=["QB","RB","WR","TE"].sort((a,b)=>totals[b]-totals[a]);
+  const leader=ordered[0];
+  return `<div class="trend"><span>Leading position</span><b><span class="pos ${leader}">${leader}</span> ${totals[leader]}</b></div>
+  ${["QB","RB","WR","TE"].map(p=>`<div class="metricrow"><span>${p}</span><b>${totals[p]}</b></div>`).join("")}`;
+}
+
+function advisorText(team, data){
+  const c=team.counts;
+  const recent=data.picks.slice(-10);
+  const teRecent=recent.filter(p=>p.position==="TE").length;
+  const rbRecent=recent.filter(p=>p.position==="RB").length;
+  const wrRecent=recent.filter(p=>p.position==="WR").length;
+  if(c.TE===0) return `<b>Primary need:</b> TE remains empty. Treat TE as the leading structural priority only when the value is comparable to the best WR/RB available. ${teRecent>=3?"A real TE run may be developing.":"The room is not currently forcing a TE panic."}`;
+  if(c.WR<4) return `<b>Primary need:</b> Add WR volume. This format starts 3 WR plus 3 flex, so depth matters more than simply filling starters.`;
+  if(c.RB<4) return `<b>Primary need:</b> Add RB depth. The current room has taken ${rbRecent} RB and ${wrRecent} WR in the last 10 picks.`;
+  return `<b>Current plan:</b> Stay value-driven. Your basic structure is intact; use the next pick to capture the strongest tier before it closes.`;
+}
+
+async function load(){
+  $("status").textContent="Loading";
+  try{
+    $("err").style.display="none";
+    const response=await fetch("/.netlify/functions/snapshot",{cache:"no-store"});
+    if(!response.ok) throw new Error("Snapshot function returned "+response.status);
+    const data=await response.json();
+    render(data);
+  }catch(error){
+    console.error(error);
+    $("status").textContent="Error";
+    $("err").style.display="block";
+    $("err").textContent="Live sync error: "+error.message;
+  }
+}
+
+function render(data){
+  $("status").textContent=data.draft.status||"unknown";
+  $("pickCount").textContent=data.pick_count;
+  $("nextPick").textContent=data.next_pick_no??"Complete";
+  $("nextPickMini").textContent=data.next_pick_no??"—";
+  $("pickDistance").textContent=`Draft is ${data.draft.status||"unknown"} · last sync ${new Date(data.refreshed_at*1000).toLocaleTimeString([], {hour:"numeric",minute:"2-digit",second:"2-digit"})}`;
+
+  const rankings=data.teams.map(t=>({...t,score:teamScore(t)})).sort((a,b)=>b.score-a.score);
+  const you=rankings.find(t=>Number(t.slot)===YOUR_SLOT);
+  const yourRank=rankings.findIndex(t=>Number(t.slot)===YOUR_SLOT)+1;
+
+  if(you){
+    const label=healthText(you.score);
+    $("healthScore").textContent=you.score+"/100";
+    $("healthScore").className="kpi "+label[1];
+    $("healthBar").style.width=you.score+"%";
+    $("healthLabel").textContent=label[0];
+    $("yourRank").textContent="#"+yourRank+" / "+rankings.length;
+    $("construction").innerHTML=renderConstruction(you);
+    $("advisor").innerHTML=advisorText(you,data);
+    $("yourRoster").innerHTML=you.picks.map(p=>`<span class="chip"><span class="pos ${p.position}">${p.position}</span> ${esc(p.name)}</span>`).join("");
+    $("yourReport").innerHTML=["QB","RB","WR","TE"].map(p=>`<div class="metricrow"><span>${p}</span><b>${you.counts[p]}</b></div>`).join("");
+  }
+
+  $("roomTrend").innerHTML=renderTrend(data.picks);
+
+  $("rankList").innerHTML=rankings.map((t,i)=>`<div class="metricrow"><span><b>#${i+1}</b> ${esc(t.display_name)}</span><b>${t.score}</b></div>`).join("");
+
+  $("teamGrid").innerHTML="";
+  rankings.forEach((team,i)=>{
+    const card=document.createElement("div");
+    card.className="card team";
+    card.innerHTML=`<div class="rankline"><div><div class="muted">Slot ${team.slot}</div><b>${esc(team.display_name)}</b></div><div class="rankbadge">#${i+1}</div></div>
+      <div class="counts">${["QB","RB","WR","TE"].map(p=>`<div class="cnt"><b>${team.counts[p]}</b><small>${p}</small></div>`).join("")}</div>
+      <div class="metricrow"><span>Health</span><b>${team.score}</b></div>`;
+    card.addEventListener("click",()=>openTeam(team));
+    $("teamGrid").appendChild(card);
+  });
+
+  $("pickList").innerHTML=data.picks.slice().reverse().slice(0,50).map(p=>`<div class="pick"><b>#${p.pick_no}</b><div><b>${esc(p.name)}</b><br><small>Round ${p.round} · Slot ${p.draft_slot} · ${p.team||"FA"}</small></div><span class="pos ${p.position}">${p.position}</span></div>`).join("");
+}
+
+function openTeam(team){
+  $("modalContent").innerHTML=`<h2>${esc(team.display_name)}</h2><p class="muted">Slot ${team.slot} · heuristic score ${team.score}</p><div class="chips">${team.picks.map(p=>`<span class="chip"><span class="pos ${p.position}">${p.position}</span> ${esc(p.name)}</span>`).join("")||"No picks"}</div>`;
+  $("modal").classList.add("open");
+}
+
+$("close").addEventListener("click",()=>$("modal").classList.remove("open"));
+$("refresh").addEventListener("click",load);
+load();
+setInterval(load,8000);
+</script>
+</body>
+</html>
